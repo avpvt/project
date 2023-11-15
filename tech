@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vehicle Counts Graph</title>
+    <!-- Include Chart.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Create a canvas element to render the chart -->
+    <canvas id="vehicleCountsChart" width="800" height="400"></canvas>
+
+    <!-- Include your Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.3.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.3.0/firebase-database.js"></script>
+
+    <script>
+        // Initialize Firebase with your configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyA1zWm5QY_b7O-Cyh6sQAcBKc2OLIBHcZw",
+            authDomain: "technical-project-31b9d.firebaseapp.com",
+            databaseURL: "https://technical-project-31b9d-default-rtdb.firebaseio.com",
+            projectId: "technical-project-31b9d",
+            storageBucket: "technical-project-31b9d.appspot.com",
+            messagingSenderId: "830317971503",
+            appId: "1:830317971503:web:a4615507038951cd6d1eda",
+            measurementId: "G-2NKTLKZ199"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Function to update the chart with new data
+        function updateChartWithData(goingDown, goingUp) {
+            const ctx = document.getElementById('vehicleCountsChart').getContext('2d');
+            const myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Going Down', 'Going Up'],
+                    datasets: [{
+                        label: 'Vehicle Counts',
+                        data: [goingDown, goingUp],
+                        backgroundColor: ['rgba(255, 99, 132, 0.2)', 'rgba(54, 162, 235, 0.2)'],
+                        borderColor: ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        // Function to fetch data from Firebase and update the chart
+        function updateChart() {
+            const dataRef = database.ref('json'); // Assuming 'json' is the reference name
+            dataRef.on('value', (snapshot) => {
+                const data = snapshot.val();
+
+                // Extract data for the chart
+                const goingDown = data ? data.going_down : 0;
+                const goingUp = data ? data.going_up : 0;
+
+                // Update the chart
+                updateChartWithData(goingDown, goingUp);
+            });
+        }
+
+        // Fetch and update the chart initially
+        updateChart();
+    </script>
+</body>
+</html>
